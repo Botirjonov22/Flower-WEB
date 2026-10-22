@@ -1,113 +1,70 @@
-const track = document.querySelector("#track");
-const next = document.querySelector("#next");
-const prev = document.querySelector("#prev");
 
-let index = 0;
+document.addEventListener("DOMContentLoaded", () => {
+  /* ================= TESTIMONIALS CAROUSEL ================= */
 
-function getVisibleCards() {
-  return window.innerWidth <= 700 ? 1 : 2;
-}
+  const track = document.querySelector("#track");
+  const next = document.querySelector("#next");
+  const prev = document.querySelector("#prev");
+  const carousel = document.querySelector(".carousel");
 
-function updateCarousel() {
-  const cards = track.querySelectorAll(".review-card");
-  const visible = getVisibleCards();
-  const maxIndex = Math.max(0, cards.length - visible);
+  if (!track || !next || !prev || !carousel) {
+    return;
+  }
 
-  index = Math.min(Math.max(index, 0), maxIndex);
+  const cards = Array.from(track.querySelectorAll(".review-card"));
 
-  const cardWidth = cards[0].getBoundingClientRect().width;
-  const gap = parseFloat(getComputedStyle(track).gap) || 0;
+  if (cards.length === 0) {
+    return;
+  }
 
-  track.style.transform = `translateX(-${index * (cardWidth + gap)}px)`;
-
-  prev.disabled = index === 0;
-  next.disabled = index === maxIndex;
-}
-
-next.addEventListener("click", () => {
-  index++;
-  updateCarousel();
-});
-
-prev.addEventListener("click", () => {
-  index--;
-  updateCarousel();
-});
-
-window.addEventListener("resize", updateCarousel);
-
-updateCarousel();
-
-const revealElements = document.querySelectorAll(
-  ".hero-wrapper, .sell-wrapper, .about-wrapper, .fifth-wrapper, .testimonials, .footer-wrapper",
-);
-
-revealElements.forEach((element) => {
-  element.classList.add("reveal");
-});
-
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("show");
-        observer.unobserve(entry.target);
-      }
-    });
-  },
-  {
-    threshold: 0.15,
-  },
-);
-
-revealElements.forEach((element) => {
-  observer.observe(element);
-});
-
-// TESTIMONIALS CAROUSEL
-const track = document.querySelector("#track");
-const next = document.querySelector("#next");
-const prev = document.querySelector("#prev");
-
-if (track && next && prev) {
   let index = 0;
 
+  function getVisibleCards() {
+    if (window.innerWidth <= 700) {
+      return 1;
+    }
+
+    return 2;
+  }
+
+  function getMaxIndex() {
+    return Math.max(0, cards.length - getVisibleCards());
+  }
+
   function updateCarousel() {
-    const cards = track.querySelectorAll(".review-card");
-    if (!cards.length) return;
-
     const gap = parseFloat(getComputedStyle(track).gap) || 0;
-    const visibleCards = window.innerWidth <= 700 ? 1 : 2;
-    const maxIndex = Math.max(0, cards.length - visibleCards);
-
-    index = Math.max(0, Math.min(index, maxIndex));
-
     const cardWidth = cards[0].getBoundingClientRect().width;
+
+    index = Math.min(index, getMaxIndex());
+    index = Math.max(index, 0);
+
     track.style.transform = `translateX(-${index * (cardWidth + gap)}px)`;
+
+    prev.disabled = index === 0;
+    next.disabled = index === getMaxIndex();
+
+    prev.style.opacity = prev.disabled ? "0.5" : "1";
+    next.style.opacity = next.disabled ? "0.5" : "1";
+
+    prev.style.cursor = prev.disabled ? "not-allowed" : "pointer";
+    next.style.cursor = next.disabled ? "not-allowed" : "pointer";
   }
 
   next.addEventListener("click", () => {
-    const visibleCards = window.innerWidth <= 700 ? 1 : 2;
-    const maxIndex = Math.max(
-      0,
-      track.querySelectorAll(".review-card").length - visibleCards,
-    );
-
-    index = index >= maxIndex ? 0 : index + 1;
-    updateCarousel();
+    if (index < getMaxIndex()) {
+      index++;
+      updateCarousel();
+    }
   });
 
   prev.addEventListener("click", () => {
-    const visibleCards = window.innerWidth <= 700 ? 1 : 2;
-    const maxIndex = Math.max(
-      0,
-      track.querySelectorAll(".review-card").length - visibleCards,
-    );
-
-    index = index <= 0 ? maxIndex : index - 1;
-    updateCarousel();
+    if (index > 0) {
+      index--;
+      updateCarousel();
+    }
   });
 
   window.addEventListener("resize", updateCarousel);
+
   updateCarousel();
-}
+});
