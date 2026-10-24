@@ -325,7 +325,7 @@ nav {
 .main__img {
   position: absolute;
   z-index: 1;
-  right: 55px;
+  right: 1px;
   bottom: 0;
   width: min(43%, 450px);
   max-height: 440px;
@@ -342,8 +342,8 @@ nav {
 .strelka {
   position: absolute;
   z-index: 2;
-  right: 43%;
-  top: 35%;
+  right: 40%;
+  top: 70%;
   width: 90px;
   object-fit: contain;
 }
